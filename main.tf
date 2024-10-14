@@ -28,6 +28,7 @@ locals {
     }
   }
 }
+
 module "aws_lambda" {
   source = "./modules/lambda"
   for_each = local.lambdas
