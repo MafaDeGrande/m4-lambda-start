@@ -8,22 +8,22 @@ variable "env" {
   description = "Name of the environment"
 }
 
-variable "bucket_name" {
-  type = string
-  description = "S3 bucket name"
-}
-
 variable "handler" {
   type = string
   description = "Function entrypoint in code"
 }
 
-variable "path" {
+variable "s3_bucket" {
   type = string
-  description = "Path to the function's deployment package within the local filesystem"
+  description = "S3 bucket location containing the function's deployment package"
 }
 
-variable "key" {
+variable "s3_key" {
   type = string
-  description = "The output of the archive file"
+  description = "S3 key of an object containing the function's deployment package"
+}
+
+variable "source_code_hash" {
+  type = string
+  description = "Virtual attribute used to trigger replacement when source code changes"
 }

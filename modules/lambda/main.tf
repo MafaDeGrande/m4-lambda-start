@@ -5,38 +5,18 @@ locals {
     Env  = var.env
   }
   handler = var.handler
-  path = var.path
-  key = var.key
-}
-resource "aws_s3_bucket" "lambda_bucket" {
-  bucket        = var.bucket_name
-  force_destroy = true
-}
-
-data "archive_file" "lambda_hello_world" {
-  type = "zip"
-
-  source_dir  = local.path
-  output_path = "${local.path}/${local.key}"
-}
-
-resource "aws_s3_object" "lambda_hello_world" {
-  bucket = aws_s3_bucket.lambda_bucket.id 
-  key = local.key
-  source = data.archive_file.lambda_hello_world.output_path
-  etag = filemd5(data.archive_file.lambda_hello_world.output_path)
 }
 
 resource "aws_lambda_function" "hello_world" {
   function_name = local.name
 
-  s3_bucket = aws_s3_bucket.lambda_bucket.id
-  s3_key = aws_s3_object.lambda_hello_world.key
+  s3_bucket = var.s3_bucket
+  s3_key = var.s3_key
 
   runtime = "provided.al2"
   handler = local.handler
 
-  source_code_hash = data.archive_file.lambda_hello_world.output_base64sha256
+  source_code_hash = var.source_code_hash
 
   role = aws_iam_role.lambda_exec.arn
 }

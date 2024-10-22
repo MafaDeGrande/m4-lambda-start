@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = "~> 5.37"
     }
   }
   backend "s3" {
@@ -32,12 +32,12 @@ locals {
 module "aws_lambda" {
   source = "./modules/lambda"
   for_each = local.lambdas
-  bucket_name = "s3lambda-helloworld-dev"
   name = each.value.name
   handler = each.value.name
-  path = each.value.path
-  key = each.value.key
   env = each.value.env
+  s3_bucket = module.s3[each.key].s3_bucket 
+  s3_key = module.s3[each.key].s3_key 
+  source_code_hash = module.s3[each.key].source_code_hash
 }
 
 module "api_gateway" {
@@ -46,4 +46,12 @@ module "api_gateway" {
   env = "dev"
   lambda_arn = module.aws_lambda["api/v1/hello"].arn
   function_name = module.aws_lambda["api/v1/hello"].function_name
+}
+
+module "s3" {
+  source = "./modules/s3/"
+  for_each = local.lambdas
+  bucket_name = "s3lambda-helloworld-dev"
+  path = each.value.path
+  key = each.value.key
 }

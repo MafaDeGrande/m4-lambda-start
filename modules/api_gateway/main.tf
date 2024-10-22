@@ -5,7 +5,6 @@ locals {
     Env  = var.env
   }
   lambda_arn = var.lambda_arn
-  function_name = var.function_name
 }
 
 module "api_gateway" {
@@ -31,7 +30,7 @@ module "api_gateway" {
     }
     "$default" = {
       integration = {
-        uri = local.lambda_arn
+        uri = var.lambda_arn
       }
     }
   }
@@ -42,7 +41,7 @@ module "api_gateway" {
 resource "aws_lambda_permission" "apigw_lambda" {
   statement_id = "AllowExecutionFromAPIGateway"
   action = "lambda:InvokeFunction"
-  function_name = local.function_name
+  function_name = var.function_name
   principal = "apigateway.amazonaws.com"
   source_arn = "${module.api_gateway.api_execution_arn}/*"
 }
