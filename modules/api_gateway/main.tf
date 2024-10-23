@@ -4,7 +4,6 @@ locals {
     Name = var.name
     Env  = var.env
   }
-  lambda_arn = var.lambda_arn
 }
 
 module "api_gateway" {
@@ -20,9 +19,9 @@ module "api_gateway" {
   create_domain_records = false
 
   routes = {
-    "POST /" = {
+    "POST /api/v1/hello" = {
       integration = {
-        uri                    = local.lambda_arn
+        uri                    = var.lambda_arn
         type                   = "AWS_PROXY"
         payload_format_version = "2.0"
         timeout_milliseconds   = 12000
